@@ -1,0 +1,48 @@
+---
+title: "Data 607 HW 1"
+author: "Sarah Wigodsky"
+date: "August 27, 2017"
+output: html_document
+---
+
+```{r}
+mush <- read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data")
+
+
+mush1 <- mush[,c(1,6,21,23)]
+
+colnames(mush1) <- c("safety", "odor", "spore print color", "habitat")
+mush1$safety <-gsub ("e","edible",mush1$safety)
+mush1$safety <-gsub ("p","poisonous",mush1$safety)
+
+mush1$odor <- gsub ("\\<a\\>", "almond", mush1$odor)
+mush1$odor <- gsub ("\\<l\\>", "anise", mush1$odor)
+mush1$odor <- gsub ("\\<c\\>", "creosote", mush1$odor)
+mush1$odor <- gsub ("\\<y\\>", "fishy", mush1$odor)
+mush1$odor <- gsub ("\\<f\\>", "foul", mush1$odor)
+mush1$odor <- gsub ("\\<m\\>", "musty", mush1$odor)
+mush1$odor <- gsub ("\\<n\\>", "none", mush1$odor)
+mush1$odor <- gsub ("\\<p\\>", "pungent", mush1$odor)
+mush1$odor <- gsub ("\\<s\\>", "spicy", mush1$odor)
+
+mush1$`spore print color` <- gsub ("\\<k\\>", "black", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<n\\>", "brown", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<b\\>", "buff", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<h\\>", "chocolate", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<r\\>", "green", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<o\\>", "orange", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<u\\>", "purple", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<w\\>", "white", mush1$`spore print color`)
+mush1$`spore print color` <- gsub ("\\<y\\>", "yellow", mush1$`spore print color`)
+
+mush1$habitat <- gsub ("\\<g\\>", "grasses", mush1$habitat)
+mush1$habitat <- gsub ("\\<l\\>", "leaves", mush1$habitat)
+mush1$habitat <- gsub ("\\<m\\>", "meadows", mush1$habitat)
+mush1$habitat <- gsub ("\\<p\\>", "paths", mush1$habitat)
+mush1$habitat <- gsub ("\\<u\\>", "urban", mush1$habitat)
+mush1$habitat <- gsub ("\\<w\\>", "waste", mush1$habitat)
+mush1$habitat <- gsub ("\\<d\\>", "woods", mush1$habitat)
+mush1
+
+```
+
