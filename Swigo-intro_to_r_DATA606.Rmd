@@ -284,18 +284,41 @@ The data are stored in a data frame called `present`.
 
 -   What years are included in this data set? What are the dimensions of the 
     data frame and what are the variable or column names?
+```{r present-data, eval=TRUE}
+present
+```
+
+The years are from 1940-2002.
+The data set has 63 rows and 3 variables.
+The column names are year, boys and girls.
 
 -   How do these counts compare to Arbuthnot's? Are they on a similar scale?
+
+The number of births from 1940-2002 are signficantly larger than those Arbuthnot recorded. The more recent values are hundreds of times greater than the older values.
+
 
 -   Make a plot that displays the boy-to-girl ratio for every year in the data 
     set. What do you see? Does Arbuthnot's observation about boys being born in
     greater proportion than girls hold up in the U.S.? Include the plot in your 
     response.
 
+```{r plot-boys to girls ratio for each year}
+plot(present$year, present$boys/present$girls)
+plot(arbuthnot$year, arbuthnot$boys/arbuthnot$girls)
+
+```
+In the present data set, the ratio of boys to girls is always greater than 1, indicating that there are more boys being born than girls.  This is similar to the data Arbuthnot recorded in which the ratio of boys to girls was also greater than 1.
+
+
 -   In what year did we see the most total number of births in the U.S.? You can
     refer to the help files or the R reference card 
     [http://cran.r-project.org/doc/contrib/Short-refcard.pdf](http://cran.r-project.org/doc/contrib/Short-refcard.pdf)
     to find helpful commands.
+    
+```{r max-num-births, eval=TRUE}
+num <- which.max(present$boys+present$girls)
+```
+There were the most births in the year `r present$year[num]`.
 
 These data come from a report by the Centers for Disease Control 
 [http://www.cdc.gov/nchs/data/nvsr/nvsr53/nvsr53_20.pdf](http://www.cdc.gov/nchs/data/nvsr/nvsr53/nvsr53_20.pdf). 

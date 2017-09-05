@@ -1,7 +1,10 @@
+DROP SCHEMA IF EXISTS movie_rating;
+CREATE SCHEMA movie_rating;
+USE movie_rating;
+
 DROP TABLE IF EXISTS moviereviewer;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS reviewer;
-
 
 CREATE TABLE movie(
 	movie_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,7 +67,7 @@ ON mr.reviewer_id = r.reviewer_id
 ORDER BY m.movie_name ASC;
 
 SELECT m.movie_name AS 'Movie Name', r.reviewer_name AS 'Reviewer', mr.rating AS 'Rating'
-INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 5.7/Uploads/moviereviewers2.csv'
+INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 5.7/Uploads/moviereviewers.csv'
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 FROM movie m
