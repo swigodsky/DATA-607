@@ -1,12 +1,36 @@
----
-title: "movie_review"
-author: "Sarah Wigodsky"
-date: "September 4, 2017"
-output: html_document
----
+##DATA 607 HW 2
+##Sarah Wigodsky
+##September 8, 2017
 
-```{r movie_review_data_table, eval=TRUE}
-review <- read.csv("https://raw.githubusercontent.com/swigodsky/DATA-607/master/moviereviewers1.csv")
-colnames(review) <- c("Movie Name", "Reviewer", "Rating")
-review
+##Reading a Database of Movie Reviews in from MySQL 
+
+
+####Reading in MySQL password from a text file stored on the computer
+```{r read_in_MySQL_password_so_that_it_is_private}
+library(readr)
+sqlpass <- read_file("C:/Users/Swigo/Desktop/Sarah/sqlpassword.txt")
+```
+
+
+####Connecting to MySQL
+```{r connect_to_MySQL, eval=TRUE}
+library(RMySQL)
+movie_db <- dbConnect(RMySQL::MySQL(), user = 'root', password = sqlpass, dbname = 'movie_rating', host = 'localhost', port = 3306)
+```
+
+
+####List Tables in Movie Database
+```{r list_tables, eval=TRUE}
+dbListTables(movie_db)
+```
+
+
+####Run Querry to print movie name, reviewer name, and reviews
+```{r querry, eval=TRUE}
+dbGetQuery(conn = movie_db, statement = "SELECT m.movie_name AS 'Movie Name', r.reviewer_name AS 'Reviewer', mr.rating AS 'Rating' FROM movie m
+LEFT JOIN moviereviewer mr
+ON m.movie_id = mr.movie_id 
+LEFT JOIN reviewer r
+ON mr.reviewer_id = r.reviewer_id
+ORDER BY m.movie_name ASC;")
 ```
