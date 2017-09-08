@@ -66,17 +66,3 @@ LEFT JOIN reviewer r
 ON mr.reviewer_id = r.reviewer_id
 ORDER BY m.movie_name ASC;
 
-SELECT m.movie_name AS 'Movie Name', r.reviewer_name AS 'Reviewer', mr.rating AS 'Rating'
-INTO OUTFILE 'C:/ProgramData/MySQL/MySQL Server 5.7/Uploads/moviereviewers.csv'
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-FROM movie m
-LEFT JOIN moviereviewer mr
-ON m.movie_id = mr.movie_id 
-LEFT JOIN reviewer r
-ON mr.reviewer_id = r.reviewer_id
-ORDER BY m.movie_name ASC;
-
-#code for INTO OUTFILE and LINES TERMINATE BY came from Hands on lab export SQL to csv
-#added  fields terminated by from stackeoverflow
-#https://stackoverflow.com/questions/31951468/error-code-1290-the-mysql-server-is-running-with-the-secure-file-priv-option
