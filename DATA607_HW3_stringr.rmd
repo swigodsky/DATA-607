@@ -1,0 +1,109 @@
+---
+title: "Manipulating Strings"
+author: "Sarah Wigodsky"
+date: "September 11, 2017"
+output: html_document
+---
+
+####Input Names
+```{r input_names, eval=TRUE}
+library("stringr")
+name <- c("Moe Szyslak", "Burns, C. Montogomery", "Rev. Timothy Lovejoy", "Ned Flanders", "Simpson, Homer", "Dr. Julius Hibbert")
+```
+
+####Extract Last Names - Question 3A
+```{r extract_last_names, eval=TRUE}
+last_name <-unlist(str_extract_all(name, "[[:alpha:]]{2,},|[^[\\.]][[:blank:]][[:alpha:]]{3,}"))
+last_name <-unlist(str_extract_all(last_name, "[[:alpha:]]{2,}"))
+last_name
+```
+
+####Extract First Names
+```{r extract_first_names, eval=TRUE}
+first_name <-unlist(str_extract_all(name, ", [[:alpha:]]{2,}|[[:upper:]]{1}. [[:alpha:]]{2,}|[[:alpha:]]{3,}[[:blank:]]"))
+first_name <-unlist(str_extract_all(first_name, "[[:alpha:]]{2,}|[[:upper:]]{1}. [[:alpha:]]{2,}"))
+first_name
+```
+####Write Names in Data Frame
+``` {r write_first_name_last_name, eval=TRUE}
+name_table <- data.frame (first_name, last_name)
+name_table
+```
+
+#### Logical Vector to indicate title Question 3B
+```{r determine_presence_of_title, eval=TRUE}
+title <- str_detect(name, "[[:upper:]]{1}[[:alpha:]]{1,}\\.")
+name_table <- cbind(name_table, title)
+name_table
+```
+
+####Logical Vector to indicate a second name Question 3C
+```{r determine_presence_of_second_name, eval=TRUE}
+two_names <- str_detect(first_name, "[[:upper:]]{1}\\. [[:alpha:]]{1,}")
+name_table <- cbind(name_table, two_names)
+name_table
+```
+
+####Question 4
+Describe the types of strings that confom to the following regular expressons and construct an example that is matched by the regular expression.
+
+a.  [0-9]+\\$
+
+    a digit between 0 and 9 that is repeated one or more times followed by $
+    
+    example:  45$
+
+```{r, eval=TRUE}
+a <- "45$"
+str_extract_all(a, "[0-9]+\\$")
+```
+
+
+b.  \\b[a-z]{1,4}\\b
+
+    a string that begins with a lower case letter that appears at least once but no more than 4 times followed by where the number is the end of the string
+    
+    example: yes
+
+```{r, eval=TRUE}
+b <- "yes"
+str_extract_all(b, "\\b[a-z]{1,4}\\b")
+```
+    
+c.  .*?\\.txt$
+
+    a single character matched zero or more times (the preceeding item is optional and will be matched at most once) followed by a period and followed by txt
+    
+    example: file.txt
+
+```{r, eval=TRUE}
+c <- "file.txt"
+str_extract_all(c, ".*?\\.txt$")
+```
+
+
+    
+d.  \\d{2}/\\d{2}/\\d{4}
+
+    a two digit number followed by / followed by a 2 digit number followed by / followed by a 4 digit number ... a date
+    
+    example:  11/12/1985
+
+```{r, eval=TRUE}
+d <- "11/12/1985"
+str_extract_all(d, "\\d{2}/\\d{2}/\\d{4}")
+```
+
+    
+e.  <(.+?)>.+?</\\1>
+
+    a string that starts with < which is followed by one or more characters and then followed by > which is followed by at least 1 character which is followed by the repeat of the first set of characters in sideways brackets preceeded by /
+    
+    example:   <h1>heading</h1>
+    
+  ```{r, eval=TRUE}
+e <- "<h1>heading</h1>"
+str_extract_all(e, "<(.+?)>.+?</\\1>")
+```
+
+    
