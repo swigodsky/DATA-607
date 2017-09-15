@@ -101,7 +101,7 @@ e.  <(.+?)>.+?</\\1>
     
     example:   <h1>heading</h1>
     
-  ```{r, eval=TRUE}
+```{r, eval=TRUE}
 e <- "<h1>heading</h1>"
 str_extract_all(e, "<(.+?)>.+?</\\1>")
 ```
