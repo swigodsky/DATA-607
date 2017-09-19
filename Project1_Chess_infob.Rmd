@@ -86,7 +86,7 @@ colnames(opponent_rating) <- c("Opponent 1", "Opponent 2", "Opponent 3", "Oppone
 head(opponent_rating)
 ```
 
-####Data Table of Relevant Informataion
+####Data Table of Relevant Information
 ```{r making_table, eval=TRUE}
 info_table <- data.frame(list(name, state, totalpnts, prerating, opponent_rating$`Average Opponent Rating`))
 colnames(info_table) <- c("Name", "State", "Total Points", "Prerating", "Avg Opponent Rating")
