@@ -1,0 +1,99 @@
+---
+title: "DATA _607_Project1"
+author: "Sarah Wigodsky"
+date: "September 17, 2017"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    toc_depth: 4
+---
+##Chess Tournament Data Analysis
+
+####Reading in text file of chess tournament
+```{r read_in_text, eval=TRUE}
+library(readr)
+chess <- read_file("https://raw.githubusercontent.com/swigodsky/DATA-607/master/tournamentinfo.txt")
+```
+
+
+####Extract Name from Text File
+```{r names, eval=TRUE}
+library(stringr)
+
+name <- unlist(str_extract_all(chess, "[[:upper:]]{2,} ?[[:upper:]]{1,} ?[[:upper:]]{1,} ?-?[[:upper:]]{1,}"))
+name = name[-1]
+head(name)
+```
+
+
+####Extract State from Text File
+```{r state, eval = TRUE}
+state <- unlist(str_extract_all(chess, "\n   [[:upper:]]{2}"))
+state <- unlist(str_extract_all(state, "[[:upper:]]{2}"))
+head(state)
+```
+
+
+####Extract Total Points
+```{r totalpnts, eval=TRUE}
+totalpnts <- unlist(str_extract_all(chess, "[[:digit:]]{1}\\.[[:digit:]]{1}"))
+head(totalpnts)
+```
+
+####Extract PreRating
+```{r prerating, eval=TRUE}
+prerating <- unlist(str_extract_all(chess, "R: *[[:digit:]]{1,}"))
+prerating <- as.numeric(unlist(str_extract_all(prerating, "[[:digit:]]{1,}")))
+head(prerating)
+```
+
+####Extract Opponent Player Number
+```{r playernum, eval=TRUE}
+oppnum <- unlist(str_extract_all(chess, "W *[[:digit:]]{1,}|D *[[:digit:]]{1,}|L *[[:digit:]]{1,}|\n"))
+
+oppnum <- unlist(str_extract_all(oppnum, "\n|[[:digit:]]{1,}"))
+oppnum = oppnum[-1:-4]
+
+oppnumdigit <- str_detect(oppnum, "[[:digit:]]{1,}")
+
+x <- 1
+y <- 1
+a <-c(NA,NA)
+opponent <- data.frame(list("Opponent 1"=a, "Opponent 2"=a, "Opponent 3"=a,"Opponent 4"=a,"Opponent 5"=a,"Opponent 6"=a, "Opponent 7"=a), stringsAsFactors = FALSE)
+
+for (i in 1:length(oppnum)){
+  ifelse ((oppnumdigit[i] == TRUE), 
+          {opponent[x,y] <- oppnum[i]
+          y <- y+1}, 
+          {x <- x + 1
+          y <- 1})
+}
+
+opponent <- opponent[!((is.na(opponent$Opponent.1)==TRUE & is.na(opponent$Opponent.2)==TRUE & is.na(opponent$Opponent.3)==TRUE & is.na(opponent$Opponent.4)==TRUE & is.na(opponent$Opponent.5)==TRUE & is.na(opponent$Opponent.6)==TRUE & is.na(opponent$Opponent.7)==TRUE)),]
+head(opponent)
+```
+
+####Pre Chess Rating of Opponents
+```{r opponent_rating, eval=TRUE}
+opponent_rating <- data.frame(stringsAsFactors = FALSE)
+
+for (i in 1:64){
+opponent_rating <- rbind (opponent_rating, c(prerating[as.numeric(opponent[i,])]))
+  }
+opponent_rating <- cbind(opponent_rating, rowMeans(opponent_rating, na.rm = TRUE))
+colnames(opponent_rating) <- c("Opponent 1", "Opponent 2", "Opponent 3", "Opponent 4", "Opponent 5", "Opponent 6", "Opponent 7", "Average Opponent Rating")
+head(opponent_rating)
+```
+
+####Data Table of Relevant Informataion
+```{r making_table, eval=TRUE}
+info_table <- data.frame(list(name, state, totalpnts, prerating, opponent_rating$`Average Opponent Rating`))
+colnames(info_table) <- c("Name", "State", "Total Points", "Prerating", "Avg Opponent Rating")
+info_table
+```
+
+####Write Information Table into a csv file
+```{r writecsv, eval=TRUE}
+write.csv(info_table, file = "ChessTable.csv", sep = ',', col.names = TRUE, row.names = FALSE)
+```
