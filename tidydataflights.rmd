@@ -1,0 +1,91 @@
+---
+title: "Tidying Data with Flights Data Table"
+author: "Sarah Wigodsky"
+date: "September 25, 2017"
+output: html_document
+---
+
+####Import Flights Data from Github
+```{r get_data, eval=TRUE}
+flights <- read.csv("https://raw.githubusercontent.com/swigodsky/DATA-607/master/alaska_amwest.csv", stringsAsFactors = FALSE)
+```
+
+####Rename Columns
+```{r rename_columns, eval=TRUE}
+colnames(flights) <- c("airline", "status", "LA", "Phoenix", "San Diego", "San Francisco", "Seattle")
+flights
+```
+
+####Tidy Data
+To tidy the data, I took out the empty row of data.  I added the names of the airlines to the airline column for the delayed flights so that when the data is rearranged, the name of the airline accompanies the delayed data.  I removed the commas from the numbers and converted the numbers, which were being stored as strings, to being stored as numbers. \n
+I then created a new data frame called flights_db. I used the gather function to make separate columns for city and number of flights.  I then used the spread function to create separate columns for on time and delayed flights.
+```{r tidy_data, eval=TRUE}
+library(tidyr)
+library(dplyr)
+
+flights <- flights[-3,]
+flights[2,1] <- "ALASKA"
+flights[4,1] <- "AM WEST"
+
+flights_db <- flights %>% 
+  gather("city", "number", 3:7) %>%
+  spread(status, number)
+flights_db$`on time` <- gsub (",","", flights_db$`on time`)
+flights_db$`on time` <- as.numeric(flights_db$`on time`)
+flights_db$delayed <- as.numeric(flights_db$delayed)
+flights_db
+```
+
+####Calculate the Proportion of delayed flights arranged by city
+I used the mutate function to perform calculations to each row and add those values as columns in the dataframe.
+```{r ontime, eval=TRUE}
+flights_db_delayed <- flights_db %>%
+  mutate(proportion_delay= delayed/(`on time`+delayed)) %>%
+  mutate(total_flights = `on time` + delayed) %>%
+  arrange(city) %>%
+  select(-delayed, -`on time`)
+flights_db_delayed
+```
+
+In each city, a greater percentage of AM WEST's flights were delayed than ALASKA's flights that were delayed.  The discrepancy between the proprortion of delayed flights for ALASKA and AM WEST's is most signficant in San Diego, San Francisco and Seattle. 
+
+####Relationship between Number of Delays and Number of Flights
+I used ggplot to make a scatter plot and color coded the points according to airline.
+```{r graphdelaysvsflights, eval=TRUE}
+library(ggplot2)
+flights_db_delayed %>%
+  ggplot(aes(x=total_flights, y = proportion_delay))+
+  geom_point(aes(color=airline))
+```
+
+For AM WEST there appears to be a relationship bewteen the number of flights into a city and the proportional of flights that were delayed.  The greater the number of flights into a city, the lower the proportion of flights that were delayed into the city.  For ALASKA, the trend is not as dramatic, but there may be the reverse relationship.  For ALASKA, the larger the number of flights, the greater percentage of delayed flights.
+
+####Comparing the Number of Delays for each Airline
+I used the group_by function to have the calculations be performed according to the different airlines.  I then used the summarise function to perform calculations on the entire column that resulted in single values for each calculation.
+```{r total_delay, eval=TRUE}
+flights_db %>% 
+  group_by(airline) %>%
+  summarise(sum = sum(delayed), mean = mean(delayed), median=median(delayed), sd=sd(delayed))
+```
+
+The mean and median number of delays to an individual city for ALASKA are signficantly less than for AM WEST. The median is much less than the mean for both airlines.  This indicates a distribution that is skewed to the right.
+
+
+####Comparing the Proportion of Delays to individual cities for each Airline
+```{r proporion_delay_city, eval=TRUE}
+flights_db_delayed %>% 
+  group_by(airline) %>%
+  summarise(mean = mean(proportion_delay), median=median(proportion_delay), sd=sd(proportion_delay))
+```
+
+The mean and median of the proportion of flights delayed into an individual city is less for ALASKA than for AM WEST.  The mean and median proportion of flights delayed into a particular city for ALASKA are similar.  This indicates that the distribution for the proportion of flights delayed into individual cities is symmetric.
+
+
+####Comparing the Proportion of Total Delays irrespective of city for each Airline
+```{r proportion_delay, eval=TRUE}
+flights_db %>% 
+  group_by(airline) %>%
+  summarise(proportion_of_total_flights_delayed = sum(delayed)/sum(delayed+`on time`))
+```
+
+This was a surprising result to me!  Even though in each city, ALASKA has a lower percentage of flights delayed, because AM WEST had its lowest percentage of delays into Phoenix, where it had the most flights, the overall likelihood of an AM WEST flight being delayed is lower than the likelihood of an ALASKA flight being delayed.
