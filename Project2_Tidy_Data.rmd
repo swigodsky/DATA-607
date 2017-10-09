@@ -1,0 +1,185 @@
+---
+title: "DATA607 Project 2 - Tidying 3 Data Sets"
+author: "Sarah Wigodsky"
+date: "October 3, 2017"
+output: html_document
+---
+##Data Set 1 - Analyzing the Number of Receipts and Approvals of H1B Petitions from 2007-2017
+####Load H1b Data
+```{r h1b-data, eval=TRUE}
+h1b <- read.csv("https://raw.githubusercontent.com/swigodsky/DATA-607/master/h1b.csv", stringsAsFactors = FALSE)
+```
+
+####Receipts and Approvals of H1B Petitions
+```{r receipt-approval, eval=TRUE}
+h1b <- h1b[8:9,]
+colnames(h1b) <- c("status", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "Total")
+h1b$`2007` <- gsub(",","", h1b$`2007`)
+h1b$`2007` <- as.numeric(h1b$`2007`)
+h1b$`2008` <- gsub(",","", h1b$`2008`)
+h1b$`2008` <- as.numeric(h1b$`2008`)
+h1b$`2009` <- gsub(",","", h1b$`2009`)
+h1b$`2009` <- as.numeric(h1b$`2009`)
+h1b$`2010` <- gsub(",","", h1b$`2010`)
+h1b$`2010` <- as.numeric(h1b$`2010`)
+h1b$`2011` <- gsub(",","", h1b$`2011`)
+h1b$`2011` <- as.numeric(h1b$`2011`)
+h1b$`2012` <- gsub(",","", h1b$`2012`)
+h1b$`2012` <- as.numeric(h1b$`2012`)
+h1b$`2013` <- gsub(",","", h1b$`2013`)
+h1b$`2013` <- as.numeric(h1b$`2013`)
+h1b$`2014` <- gsub(",","", h1b$`2014`)
+h1b$`2014` <- as.numeric(h1b$`2014`)
+h1b$`2015` <- gsub(",","", h1b$`2015`)
+h1b$`2015` <- as.numeric(h1b$`2015`)
+h1b$`2016` <- gsub(",","", h1b$`2016`)
+h1b$`2016` <- as.numeric(h1b$`2016`)
+h1b$`2017` <- gsub(",","", h1b$`2017`)
+h1b$`2017` <- as.numeric(h1b$`2017`)
+h1b$Total <- gsub(",","", h1b$Total)
+h1b$Total <- as.numeric(h1b$Total)
+h1b <-h1b[,1:12]
+h1b
+```
+
+####Tidy H1B Data
+```{r tidy-H1B, eval=TRUE}
+library(tidyr)
+library(dplyr)
+
+h1b <- h1b %>%
+  gather("year", "n", 2:12) %>%
+  spread(status, n)
+h1b  
+```
+
+####Trend in Number of H1B petitions 
+```{r plot-num-petitions, eval=TRUE}
+library(ggplot2)
+h1b %>% 
+  ggplot(aes(x=year, y = Receipts)) + geom_point()
+```
+
+There was a dip in the number of H1B petitions received in 2009 and 2010.  This dip was followed by a steady increase in the number of H1B petitions until 2016.  There was a significant dip in the number of petitions received in 2017.  However since 2017 is not over, a conclusion cannot yet be drawn about this year.
+
+####Proportion of Petitions that Were Approved
+```{r, proportion-approved, eval=TRUE}
+h1b <-h1b %>%
+  mutate(proportion_approved = Approvals/Receipts)
+h1b
+
+h1b %>%
+  ggplot(aes(x=year, y=proportion_approved)) + geom_bar(stat='identity')
+```
+
+The percentage of applications that were approved was fairly consistent between 2007 and 2013.  There was an increase in the percentage of applications approved from 2013 to 2016.  This was followed by a marked drop in the percentage of H1B petitions that were approved in 2017.  However that could be due to the time it takes to approve a petition so again it will be more meaningful to look at the data for 2017 after the year is complete.
+
+##Data Set 2 - Motor Vehicle Collision Data for New York City
+####Load Motor Vehicle Collision Data
+```{r motor-vehicle-collision-data, eval=TRUE}
+accident_list <- read.csv("https://raw.githubusercontent.com/swigodsky/DATA-607/master/NYPD_Motor_Vehicle_Collisionsd.csv", stringsAsFactors = FALSE)
+```
+
+####View Beginning of Data, which lists the date and time of collisions
+```{r viewdata, eval=TRUE}
+head(accident_list)
+```
+
+####Separate Month, Date and Year
+####Separate Hour and Minute
+```{r separate, eval=TRUE}
+accident_list <- accident_list %>%
+  separate(DATE, c("month", "day", "year"), sep="/")  %>%
+  separate(TIME, c("hour", "minute", sep=":")) 
+accident_list$hour <- as.numeric(accident_list$hour)
+head(accident_list)
+```
+
+I am curious to find out if there is a trend relating to the number of accidents on different days of the month.  To determine that, I will calculate the number of accidents each day.  I chose to look at 2015 and 2016 since there is a complete year of data for each of those years.  (Since 2017 isn't over, including 2017 in the analysis will be misleading.)  I didn't include the 30th and 31st days of the month since February doesn't have those days and that could mislead the analysis
+####Relationship beween Number of Accidents and the Day of the Month in 2015 and 2016
+```{r month, eval=TRUE}
+acc_num16 <- rep(NA, 28)
+acc_num15 <- rep(NA, 28)
+for (i in 1:28){
+    acc_num16[i] <- nrow(filter(accident_list, day==i, year=="2016"))
+    acc_num15[i] <- nrow(filter(accident_list, day==i, year=="2015"))
+}
+acc_num15
+acc_num16
+x <- 1:28
+
+plot(x,acc_num15, xlab="day", ylab="num of accidents", col="red") 
+points(x,acc_num16, col="blue")
+```
+
+There does not seem to be any relationship bewteen the day in the month and the number of accidents on that day. \n\
+\n\
+####Exploring the Relationship Between Time of Day and the Number of accidents
+```{r timeofday, eval=TRUE}
+acc_num <- rep(NA, 6)
+s <- seq(from = 0, to = 24, by = 4)
+for (i in 1:6){
+    acc_num[i] <- nrow(filter(accident_list, hour< s[i]+4 & hour >= s[i]))
+    }
+
+acc_num
+barplot(acc_num, xlab="time of day in 4 hour intervals", ylab="num of accidents", col="red")
+```
+
+There are the fewest accidents between 0-4 am and 4-8 am.  The number of accidents picks up significantly between 8-12 and remains high until 8 pm.  From 8pm-midnight the number of accidents lowers.
+
+##Data Set 3 - Business Data Deliniated by County throughout the United States
+####Load Business Data from Different Counties
+```{r county-data, eval=TRUE}
+county <- read.csv("https://raw.githubusercontent.com/swigodsky/DATA-607/master/static_county.csv", stringsAsFactors = FALSE)
+head(county)
+```
+
+##Tidying Data
+####Take Subset of Data for 2011, Remove State and County Code, Rename Columns
+```{r tidy_county, eval=TRUE}
+county <- county[,1:9]
+county <- county %>% select(-FIPS.State.Code, -FIPS.County.Code)
+colnames(county) <- c("state", "county", "employee_range", "num_firms", "num_established", "num_employees", "annual_payroll")
+county$num_firms <- as.numeric(county$num_firms)
+county$num_employees <- as.numeric(county$num_employees)
+county$annual_payroll <- as.numeric(county$annual_payroll)
+
+head(county)
+```
+
+####Replace Missing Values for State with Appropriate Name and Keep only the total values for each county
+```{r addnames, eval=TRUE}
+county <- county %>%
+  subset(employee_range=="Total") %>%
+  select(-employee_range)
+
+for (i in 1:nrow(county)){
+  if (county[i,1]=="")
+    county[i,1] <- county[i-1,1]
+}
+county
+```
+
+ ####Compile Data By State
+```{r state, eval=TRUE}
+stateinfo <- county %>%
+  group_by(state) %>%
+  summarise(mean_num_firms = mean(num_firms, na.rm=TRUE), mean_num_employees =mean(num_employees, na.rm=TRUE), mean_annual_payroll = mean(annual_payroll, na.rm=TRUE))
+stateinfo
+```
+
+####Northeast States
+```{r subset_ne, eval=TRUE}
+ne <- stateinfo %>%
+  filter(state=="Vermont" | state=="Maine" | state=="New Hampshire" | state=="Massachusetts" |state =="Rhode Island" | state=="Connecticut" |state=="New York" | state=="New Jersey" | state=="Pennsylvania")
+ne
+```
+
+####Bar Graph for Annual Payroll in the Northeast
+```{r bargraphNE, eval=TRUE}
+ggplot(data=ne, mapping=aes(x=state, y=mean_annual_payroll, fill=state)) + geom_bar(stat='identity') + coord_flip() 
+
+```
+
+Rather than compare the mean annual payroll for all states, I chose to focus on the northeast.  Massachusetts, Connecticut, New Jersey, and then New York have companies with the largest mean annual payrolls.  The states with companies with the lowest mean annual payrolls are Pennsylvania, Rhode Island, New Hampshire, Maine and Vermont.  I am wondering if there is a link between companies' mean annual payroll and the number of college graduates in each of these states.  this could be a source of further research.
