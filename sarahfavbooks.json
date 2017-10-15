@@ -1,22 +1,23 @@
-{"favorite books" :[
+[
 	{
-	"title" : "The Goldfinch",
-	"author" : "Donna Tartt",
-	"publisher" : "Back Bay Books",
-	"ISBN" : "978-0316055444",
-	"award" : "Pulizter Prize for Fiction" 
+		"title" : "The Goldfinch",
+		"author" : {"author1" : "Donna Tartt", "author2" : NULL},
+		"publisher" : "Back Bay Books",
+		"ISBN" : "978-0316055444",
+		"award" : "Pulizter Prize for Fiction" 
 	},
 	{
-	"title" : "The Amazing Adventures of Kavalier & Clay",
-	"author" : "Michael Chabon",
-	"publisher" : "Random House Publishing Group",
-	"ISBN" : "978-0812983586",
-	"award" : "Pulizter Prize for Fiction"
+		"title" : "The Amazing Adventures of Kavalier & Clay",
+		"author" : {"author1" : "Michael Chabon", "author2" : NULL},
+		"publisher" : "Random House Publishing Group",
+		"ISBN" : "978-0812983586",
+		"award" : "Pulizter Prize for Fiction"
 	},
 	{
-	"title" : "I am Malala",
-	"author" : {"author1" : "Malala Yousafzai", "author2": "Christina Lamb"},
-	"publisher" : "Little, Brown and Company",
-	"ISBN" : "978-0316322423"
-	}]
-}
+		"title" : "I am Malala",
+		"author" : {"author1" : "Malala Yousafzai", "author2": "Christina Lamb"},
+		"publisher" : "Little, Brown and Company",
+		"ISBN" : "978-0316322423",
+		"award" : NULL
+	}
+]
