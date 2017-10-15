@@ -1,0 +1,95 @@
+---
+title: "DATA607HW7"
+author: "Sarah Wigodsky"
+date: "October 14, 2017"
+output:
+  html_document: default
+  word_document: default
+---
+##Introduction
+In this assignment, I will be reading in an HTML file, XML file and JSON file that I wrote that lists 3 of my favorite books.  I will then use R to make a meaningful table with the data stored in each format.
+
+####Importing Libraries
+```{r library, eval=TRUE}
+suppressWarnings(suppressMessages(library(XML)))
+suppressWarnings(suppressMessages(library(stringr)))
+suppressWarnings(suppressMessages(library(dplyr)))
+suppressWarnings(suppressMessages(library(RCurl)))
+suppressWarnings(suppressMessages(library(RJSONIO)))
+```
+
+
+####Reading in HTML data
+```{r inputHTMLdata, eval=TRUE}
+htmllink <- getURL("https://raw.githubusercontent.com/swigodsky/DATA-607/master/sarahfavbooks.html")
+bookhtml <- htmlParse(file=htmllink)
+```
+
+####Creating a Data Table from the HTML file
+```{r datatablefromhtml, eval=TRUE}
+getth = function(){
+  th_container = character()
+  list(th = function(node, ...){
+    th_container <<- c(th_container, xmlValue(node))
+  }, returnth = function() th_container)
+}
+
+h1 <- getth()
+htmlTreeParse(file = htmllink, handlers = h1)
+
+row <- rep(NA, 6)
+bookhtml <- data.frame(stringsAsFactors = FALSE)
+bookhtml <- rbind(bookhtml, row)
+row <- NULL
+
+for (i in 7:length(h1$returnth())){
+    row <- c(row, h1$returnth()[i])
+    if (i%%6==0) {
+      bookhtml <- rbind(bookhtml, row)
+      row <- NULL
+     }
+}
+rownames(bookhtml) <- NULL
+for (i in 1:6){
+    row <- c(row, h1$returnth()[i])
+}
+colnames(bookhtml) <- row
+bookhtml.df <- bookhtml[-1,]
+bookhtml.df
+```
+
+####Loading XML file
+```{r xmlfile, eval=TRUE}
+xmllink <- getURL("https://raw.githubusercontent.com/swigodsky/DATA-607/master/sarahfavbooks2.xml")
+bookxml <- xmlParse(file = xmllink)
+```
+
+####Creating a Data Table from the XML file
+```{r xmltodataframe, eval=TRUE}
+bookxml.df <- xmlToDataFrame(xmlRoot(bookxml))
+
+authors <- xpathSApply(bookxml, "//author", xmlAttrs)
+bookxml.df$author <- c(authors[1,1], authors[1,2], authors[1,3])
+colnames(bookxml.df)[2] <- "author1"
+bookxml.df <- cbind(bookxml.df, c(authors[2,1], authors[2,2], authors[2,3]))
+colnames(bookxml.df)[6] <-"author2" 
+
+bookxml.df <- bookxml.df %>%
+  select(title, author1, author2, publisher, ISBN, award)
+bookxml.df
+```
+
+####Loading JSON file
+```{r jsonfile, eval=TRUE}
+bookjson <- fromJSON("https://raw.githubusercontent.com/swigodsky/DATA-607/master/sarahfavbooks.json", nullValue = NA, simplify=FALSE)
+```
+
+####Creating a Data Table from the JSON file
+```{r jsontodataframe, eval = TRUE}
+bookjson.df <- do.call("rbind", lapply(bookjson, data.frame, stringsAsFactors=FALSE))
+
+colnames(bookjson.df)[2] <- "author1"
+colnames(bookjson.df)[3] <- "author2"
+bookjson.df[is.na(bookjson.df)] <- "NULL"
+bookjson.df
+```
