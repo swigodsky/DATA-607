@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<favorite_books>
+	<book id="1">
+		<title>The Goldfinch</title>
+		<author>Donna Tartt</author>
+		<publisher>Back Bay Books</publisher>
+		<ISBN>978-0316055444</ISBN>
+		<award>Pulizter Prize for Fiction</award>
+	</book>
+	<book id="2">
+		<title>The Amazing Adventures of Kavalier &amp; Clay</title>
+		<author>Michael Chabon</author>
+		<publisher>Random House Publishing Group</publisher>
+		<ISBN>978-0812983586</ISBN>
+		<award>Pulizter Prize for Fiction</award>
+	</book>
+	<book id="3">
+		<title>I am Malala</title>
+		<author author1= "Malala Yousafzai" author2 = "Christina Lamb"/>
+		<publisher>Little, Brown and Company</publisher>
+		<ISBN>978-0316322423</ISBN>
+	</book>
+</favorite_books>
