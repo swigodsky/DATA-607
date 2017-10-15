@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <favorite_books>
 	<book id="1">
 		<title>The Goldfinch</title>
-		<author>Donna Tartt</author>
+		<author author1="Donna Tartt" author2="NULL"/>
 		<publisher>Back Bay Books</publisher>
 		<ISBN>978-0316055444</ISBN>
 		<award>Pulizter Prize for Fiction</award>
 	</book>
 	<book id="2">
 		<title>The Amazing Adventures of Kavalier &amp; Clay</title>
-		<author>Michael Chabon</author>
+		<author author1 = "Michael Chabon" author2="NULL"/>
 		<publisher>Random House Publishing Group</publisher>
 		<ISBN>978-0812983586</ISBN>
 		<award>Pulizter Prize for Fiction</award>
@@ -19,5 +19,6 @@
 		<author author1= "Malala Yousafzai" author2 = "Christina Lamb"/>
 		<publisher>Little, Brown and Company</publisher>
 		<ISBN>978-0316322423</ISBN>
+		<award>NULL</award>
 	</book>
 </favorite_books>
