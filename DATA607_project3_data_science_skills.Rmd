@@ -69,7 +69,7 @@ softskills <- joblisttidy %>%
   mutate(selfstarter = grepl("self starter", description, ignore.case=TRUE)) %>%
   mutate(attndetail = grepl("attention to detail", description, ignore.case=TRUE)) %>%
   mutate(communication = grepl("communicat", description, ignore.case=TRUE)) %>%
-  mutate(creative = grepl("creative", description, ignore.case=TRUE)) %>%
+  mutate(creative = grepl("creativ", description, ignore.case=TRUE)) %>%
   select(job_title, company, collaborative, organized, selfstarter, attndetail, communication, creative)
 summary(softskills)  
 ```
