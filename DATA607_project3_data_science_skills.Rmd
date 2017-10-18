@@ -16,24 +16,67 @@ suppressWarnings(suppressMessages(library(RCurl)))
 suppressWarnings(suppressMessages(library(tidyr)))
 ```
 
-####Importing the data from Glassdoor
-```{r importingdata, eval=TRUE}
-joblist <- read.csv("https://raw.githubusercontent.com/delagroove/dataScience/master/jobOffers_final_with_dupes_reduced.csv", stringsAsFactors = FALSE)
+####Importing National Average Data Science Salary By Company
+```{r salarydata, eval=TRUE}
+salary <- read.csv("https://raw.githubusercontent.com/sjv1030/group_project/master/company_salary.csv", stringsAsFactors = FALSE)
+```
+
+####Tidying the Salary Data - Removing dollar sign, commas and making the salary be stored as a number
+```{r tidysalary, eval=TRUE}
+salarytidy <- salary[,-1]
+salarytidy <- salarytidy %>%
+  separate(salary, c("salary", "pay_period"), sep="per ")
+salarytidy$salary <- gsub(",", "", salarytidy$salary)
+salarytidy$salary <- unlist(str_extract_all(salarytidy$salary, "[[:digit:]]{3,}|[[:digit:]]{1,}.[[:digit:]]{1,}"))
+salarytidy$salary <- as.numeric(salarytidy$salary)
+head(salarytidy)
+```
+
+####Converting Daily, Monthly, and Hourly Salaries into a yearly salary assuming a 40 hour work week for 12 months
+```{r yearly-salary, eval=TRUE}
+
+#pay_period still says month, day or week even though it is now yearly so that it is clear which salaries were changed so that they are all yearly
+for (i in 1:length(salarytidy$salary)){
+  if (salarytidy$pay_period[i] == "month") {salarytidy$salary[i] <- salarytidy$salary[i]*12}
+  if (salarytidy$pay_period[i] == "week") {salarytidy$salary[i] <- salarytidy$salary[i]*52}
+  if (salarytidy$pay_period[i] == "hour") {salarytidy$salary[i] <- salarytidy$salary[i]*8*5*52}
+  if (salarytidy$pay_period[i] == "day") {salarytidy$salary[i] <- salarytidy$salary[i]*5*52}
+}  
 ```
 
 
+####Importing the data from Glassdoor for Boston
+```{r importingdataMA, eval=TRUE}
+joblistma <- read.csv("https://raw.githubusercontent.com/delagroove/dataScience/master/jobOffers_final_with_dupes_reduced.csv", stringsAsFactors = FALSE)
+```
+
+####Importing data from Glassdoor for NYC
+```{r importingdataNY, eval=TRUE}
+joblistny <- read.csv("https://raw.githubusercontent.com/delagroove/dataScience/master/jobOffers_ny.csv", stringsAsFactors=FALSE)
+```
+
+
+####Importing data from Glassdoor for SF
+```{r importingdataSF, eval=TRUE}
+joblistsf <- read.csv("https://raw.githubusercontent.com/delagroove/dataScience/master/jobOffers_SF.csv", stringsAsFactors=FALSE)
+joblistsf <- joblistsf[,-1]
+```
+
+####Combining data tables from Boston, NY and SF
+```{r combining-data, eval=TRUE}
+joblisttidy <- rbind(joblistma, joblistny, joblistsf)
+```
 
 ####Eliminating Duplicate Entries
 Since some companies post the same job on different days, the posted date column is elimintated prior to testing for duplicate entries.
 ```{r eliminate_duplicates, eval=TRUE}
-joblisttidy <- joblist[,-5]
+joblisttidy <- joblisttidy[,-5]
 joblisttidy <- subset(joblisttidy, duplicated(joblisttidy)==FALSE)
 ```
 
 ####Eliminating symbols in front of location
 ```{r location, eval = TRUE}
-joblisttidy$location <- unlist(str_extract_all(joblisttidy$location, "[[:upper:]]{1}[[:lower:]]{2,}, [[:alpha:]]{2}"))
-head(joblisttidy)
+joblisttidy$location <- unlist(str_extract_all(joblisttidy$location, "[[:upper:]]{1}[[:lower:]]{2,}, [[:alpha:]]{2}|[[:upper:]]{1}[[:lower:]]{2,} [[:alpha:]]{2,}, [[:alpha:]]{2}"))
 ```
 
 ####Identifying Job Descriptions that look for specific Computer Skills
@@ -43,11 +86,13 @@ compskills <- joblisttidy %>%
   mutate(perl = grepl("perl", description, ignore.case=TRUE)) %>%
   mutate(Cplusplus = grepl("C++", description, fixed=TRUE)) %>%
   mutate(SQL = grepl("SQL", description)) %>%
-  mutate(java = grepl("java", description, ignore.case=TRUE)) %>%
+  mutate(java = grepl("java\\b", description, ignore.case=TRUE)) %>%
+  mutate(javascript = grepl("javascript", description, ignore.case=TRUE)) %>%
   mutate(R = grepl(" R,", description)) %>%
   mutate(hadoop = grepl("hadoop", description, ignore.case=TRUE)) %>%
   mutate(spark = grepl("spark", description, ignore.case=TRUE)) %>%
-  select(job_title, company, python, perl, Cplusplus, SQL, java, R, hadoop, spark)
+  mutate(scala = grepl("scala", description, ignore.case=TRUE)) %>%
+  select(job_title, company, python, perl, Cplusplus, SQL, java, javascript, R, hadoop, spark, scala)
 summary(compskills)
 ```
 
@@ -57,7 +102,9 @@ skills <- joblisttidy %>%
   mutate(machinelearning = grepl("machine learning", description, ignore.case=TRUE)) %>%
   mutate(statisticalmodeling = grepl("statistical model", description, ignore.case=TRUE)) %>%
   mutate(techwriting = grepl("technical writing", description, ignore.case=TRUE)) %>%
-  select(job_title, company, machinelearning, statisticalmodeling, techwriting)
+  mutate(plateau = grepl("plateau", description, ignore.case=TRUE)) %>%
+  mutate(d3 = grepl("D3", description)) %>%
+  select(job_title, company, machinelearning, statisticalmodeling, techwriting, plateau, d3)
 summary(skills)  
 ```
 
@@ -70,6 +117,7 @@ softskills <- joblisttidy %>%
   mutate(attndetail = grepl("attention to detail", description, ignore.case=TRUE)) %>%
   mutate(communication = grepl("communicat", description, ignore.case=TRUE)) %>%
   mutate(creative = grepl("creativ", description, ignore.case=TRUE)) %>%
-  select(job_title, company, collaborative, organized, selfstarter, attndetail, communication, creative)
+  mutate(visualization = grepl("visualization", description, ignore.case=TRUE)) %>%
+  select(job_title, company, collaborative, organized, selfstarter, attndetail, communication, creative, visualization)
 summary(softskills)  
 ```
