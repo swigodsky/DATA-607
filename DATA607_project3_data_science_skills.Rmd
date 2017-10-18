@@ -68,7 +68,7 @@ joblisttidy <- rbind(joblistma, joblistny, joblistsf)
 ```
 
 ####Eliminating Duplicate Entries
-Since some companies post the same job on different days, the posted date column is elimintated prior to testing for duplicate entries.
+\n\ Since some companies post the same job on different days, the posted date column is elimintated prior to testing for duplicate entries.
 ```{r eliminate_duplicates, eval=TRUE}
 joblisttidy <- joblisttidy[,-5]
 joblisttidy <- subset(joblisttidy, duplicated(joblisttidy)==FALSE)
@@ -88,7 +88,7 @@ compskills <- joblisttidy %>%
   mutate(SQL = grepl("SQL", description)) %>%
   mutate(java = grepl("java\\b", description, ignore.case=TRUE)) %>%
   mutate(javascript = grepl("javascript", description, ignore.case=TRUE)) %>%
-  mutate(R = grepl(" R,", description)) %>%
+  mutate(R = grepl("\\bR\\b,", description)) %>%
   mutate(hadoop = grepl("hadoop", description, ignore.case=TRUE)) %>%
   mutate(spark = grepl("spark", description, ignore.case=TRUE)) %>%
   mutate(scala = grepl("scala", description, ignore.case=TRUE)) %>%
