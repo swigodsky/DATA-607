@@ -1,0 +1,40 @@
+---
+title: "DATA 607 HW 9"
+author: "Sarah Wigodsky"
+date: "October 27, 2017"
+output: html_document
+---
+##Introduction
+####I chose to search the New York Times Article Search API for mentions of the word secession between December 1, 1860 and December 7, 1860.
+
+####Load Libraries
+```{r load-libraries, eval=TRUE}
+suppressWarnings(suppressMessages(library(httr)))
+suppressWarnings(suppressMessages(library(RCurl)))
+suppressWarnings(suppressMessages(library(tidyr)))
+suppressWarnings(suppressMessages(library(dplyr)))
+suppressWarnings(suppressMessages(library(rtimes)))
+suppressWarnings(suppressMessages(library(readr)))
+```
+
+####Reading in the API Key.  It is stored in a file on my computer so that it remains secure.
+```{r APIkey, eval=TRUE}
+NYTIMES_AS_KEY = read_file("C:/Users/Swigo/OneDrive/Documents/GitHub/DATA-607/nytimesapi.txt")
+```
+
+####Searching the New York Times Article Search API
+#####Searching for the word secession between the dates of 12/1/1860 and 12/7/1860
+```{r article-search, eval=TRUE}
+secession_search <- as_search(q="secession", begin_date = "18601201", end_date = "18601207", key=NYTIMES_AS_KEY)
+```
+
+####Selecting the Publication Date, Type of Article, Headline, Web URL
+```{r selecting-columns, eval=TRUE}
+nytimes_secession <- select(secession_search$data, 7, 9, 13, 1)
+```
+
+####Converting the Tibble into a Dataframe
+```{r dataframe, eval=TRUE}
+nytimesdf <- data.frame(nytimes_secession)
+nytimesdf
+```
