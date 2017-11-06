@@ -1,0 +1,191 @@
+---
+title: "DATA 607 Project 4 - Document Classification"
+author: "Sarah Wigodsky"
+date: "October 31, 2017"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    toc: true
+
+---
+
+####The goal of this project is to use a sample of known spam files and known ham (non-spam) files to be able to determine whether an unknown email is spam or ham.
+
+####Load Libraries
+```{r, eval=TRUE}
+suppressWarnings(suppressMessages(library(readr)))
+suppressWarnings(suppressMessages(library(knitr)))
+suppressWarnings(suppressMessages(library(tidytext)))
+suppressWarnings(suppressMessages(library(tidyr)))
+suppressWarnings(suppressMessages(library(dplyr)))
+suppressWarnings(suppressMessages(library(tm)))
+suppressWarnings(suppressMessages(library(stringr)))
+suppressWarnings(suppressMessages(library(RCurl)))
+```
+
+
+####Read in Spam Data and Create a Data Frame of Data to Test and a Data Frame of Withheld Data
+```{r read-in-spam, eval=TRUE, message=FALSE, warning=FALSE}
+setwd("C:/Users/Swigo/OneDrive/Documents/GitHub/DATA-607/spamham/20021010_spam/spam")
+
+spam.path<- "C:/Users/Swigo/OneDrive/Documents/GitHub/DATA-607/spamham/20021010_spam/spam/"
+
+#The code from get.msg through all.spam is code taken from Drew Conway and John Myles White to eliminate the headers from emails
+#https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fqualityandinnovation.files.wordpress.com%2F2012%2F09%2Ftext-analysis-75-925.doc
+
+get.msg <- function(path) {
+   con <- file(path,open="rt")
+   text <- readLines(con)
+   msg <- text[seq(which(text=="")[1]+1,length(text))]  
+   close(con)
+   return(paste(msg,collapse="\n"))
+}
+
+spam.docs <- dir(spam.path)
+spam.docs <- spam.docs[which(spam.docs!="cmds")]
+all.spam <- sapply(spam.docs, function(p)get.msg(paste(spam.path,p,sep="")))
+
+spam_list <- do.call(rbind,lapply(all.spam, read_file))
+spam_df <- data.frame(emails=sample(spam_list, 500, replace=FALSE))
+
+
+
+spamtestdata <-data.frame(rep(NA, 400))
+spamholddata <-data.frame(rep(NA, 100))
+
+spamtestdata$emails <- spam_df$emails[-(401:500)]
+spamholddata$emails <- spam_df$emails[-(1:400)]
+```
+
+####Read in Ham Data and Create a Data Frame to Test and a Data Frame of Withheld Data
+```{r read-in-ham, eval=TRUE, message=FALSE, warning=FALSE}
+setwd("C:/Users/Swigo/OneDrive/Documents/GitHub/DATA-607/spamham/20021010_easy_ham/easy_ham")
+
+ham.path <- "C:/Users/Swigo/OneDrive/Documents/GitHub/DATA-607/spamham/20021010_easy_ham/easy_ham/"
+
+ham.docs <- dir(ham.path)
+ham.docs <- ham.docs[which(ham.docs!="cmds")]
+all.ham <- sapply(ham.docs, function(p)get.msg(paste(ham.path,p,sep="")))
+
+ham_list <- do.call(rbind,lapply(all.ham, read_file))
+
+ham_df <- data.frame(emails=sample(ham_list, 2551, replace=FALSE))
+
+hamtestdata <-data.frame(rep(NA, 2449))
+hamtestdata$emails <- ham_df$emails[-(2450:2551)]
+
+hamwithholddata <- data.frame(rep(NA, 102))
+hamwithholddata$emails <- ham_df$emails[-(1:2449)]
+
+hamtestdata$emails <- as.character((hamtestdata$emails))
+```
+
+####Tidying Spam and Ham Emails
+#####Words are separated, stop words are removed, only words 3 letters and longer are kept, and words are counted
+```{r words, eval=TRUE, message=FALSE}
+spamtestdata$emails <- as.character(spamtestdata$emails)
+
+wordnumspam <- vapply(strsplit(spamtestdata$emails, "\\w+"), length, integer(1))
+summary(wordnumspam)
+
+spamtidy_df <- spamtestdata %>% 
+  unnest_tokens(word, emails) %>%
+  anti_join(stop_words) %>%
+  filter(str_detect(word, "[[:alpha:]]{3,}"))
+spamwords <- spamtidy_df %>% 
+  count(word, sort=TRUE)
+spamwords
+
+
+hamtestdata$emails <- as.character((hamtestdata$emails))
+
+wordnumham <- vapply(strsplit(hamtestdata$emails, "\\w+"), length, integer(1))
+summary(wordnumham)
+
+hamtidy_df <- hamtestdata %>% 
+  unnest_tokens(word, emails) %>%
+  anti_join(stop_words) %>%
+  filter(str_detect(word, "[[:alpha:]]{3,}"))
+hamtidy_df %>%
+  count(word, sort=TRUE) 
+```
+Spam emails tend to have more words than ham emails.  The spam emails have a median word length of 332 while ham emails have a median word length of 144.
+
+
+####Finding Sentiment of Spam and Ham Emails
+```{r sentiment, eval=TRUE, message=FALSE}
+
+spamsentiment <- spamtidy_df %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(sentiment) 
+
+spamsentimentpercentage <- (spamsentiment$n[2]-spamsentiment$n[1])/(spamsentiment$n[2]+spamsentiment$n[1])
+spamsentimentpercentage
+
+
+hamsentiment <- hamtidy_df %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(sentiment) 
+
+hamsentimentpercentage <- (hamsentiment$n[2]-hamsentiment$n[1])/(hamsentiment$n[2]+hamsentiment$n[1])
+hamsentimentpercentage
+```
+
+Spam emails tend to be positive while ham emails tend to be negative.  The difference between the percentage of positive and negative words in spam emails is 33%.  The difference between the percentage of positive and negative words in ham emails is -11%. The negative sign indicates that there is a greater likelihood that the ham email will be negative.
+
+
+####Predicting whether an Email is Spam or Ham
+To predict whether an email will be spam or ham, the number of words in the email will be calculated and the sentiment of the email will be determined. The data being used to test is data from the original collectionn of spam and ham emails that were withheld from the previous analysis.  The most definitive way to determine whether an email is spam or ham is based on the sentiment analysis.  I chose to test if the percentage of positive words-percentage of negative words is greater than 0.20.  If so, then the email is categorized as spam.  If not, then the email undergoes another check based on its length: if it is less than 400 words, it is classified as ham.  Otherwise it is classified as spam.
+
+```{r check, eval=TRUE, message=FALSE}
+decision <- list()
+for (i in 1:length(spamholddata$rep.NA..100.)){
+  unknown <- data.frame(rep(NA, 1))
+  unknown$emails <- spamholddata$emails[i]
+  unknown$emails <- as.character(unknown$emails)  
+  tidy_df <- unknown %>% 
+    unnest_tokens(word, emails) %>%
+    anti_join(stop_words) %>%
+    filter(str_detect(word, "[[:alpha:]]{3,}"))
+
+  wordnum <- sum(sapply(gregexpr(" ", spamholddata$emails[i]), length)+1)   
+  
+  unknownsentiment <- tidy_df %>%
+    inner_join(get_sentiments("bing")) %>%
+    count(sentiment) 
+
+  sentimentpercentage <- (unknownsentiment$n[2]-unknownsentiment$n[1])/(unknownsentiment$n[2]+unknownsentiment$n[1])
+  sentimentpercentage
+
+  ifelse (sentimentpercentage > .25, decision<-c(decision, "spam"), {
+   ifelse (wordnum <400, decision <- c(decision,"ham"), decision<-c(decision, "spam"))
+  })
+}
+
+length(decision[decision=="spam"])/length(decision)
+
+decisionh <- list()
+for (i in 1:length(hamwithholddata$rep.NA..102.)){
+  unknown <- data.frame(rep(NA, 1))
+  unknown$emails <- hamwithholddata$emails[i]
+  unknown$emails <- as.character(unknown$emails)  
+  tidy_df <- unknown %>% 
+    unnest_tokens(word, emails) %>%
+    anti_join(stop_words) %>%
+    filter(str_detect(word, "[[:alpha:]]{3,}"))
+
+  wordnum <- sum(sapply(gregexpr(" ", hamwithholddata$emails[i]), length)+1)  
+
+  unknownsentiment <- tidy_df %>%
+    inner_join(get_sentiments("bing")) %>%
+    count(sentiment) 
+
+  sentimentpercentage <- (unknownsentiment$n[2]-unknownsentiment$n[1])/(unknownsentiment$n[2]+unknownsentiment$n[1])
+  sentimentpercentage
+
+  ifelse (sentimentpercentage > .25, decisionh<-c(decisionh, "spam"), {ifelse (wordnum < 400, decisionh <- c(decisionh,"ham"), decisionh<-c(decisionh, "spam"))})
+}
+
+length(decisionh[decisionh=="ham"])/length(decisionh)
+```
+The algorithm correctly identified spam emails about 82% of the time and correctly identified ham emails about 68% of the time.  The greater the accuracy I am able to get predicting one type of email, the lower the accuracy I am able to get in predicting the other type of email.
