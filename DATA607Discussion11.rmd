@@ -1,0 +1,42 @@
+---
+title: "DATA 607 Discussion 11"
+author: "Chunmei Zhu and Sarah Wigodsky"
+date: "November 7, 2017"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    toc: true
+---
+##Recommender Systems - Target
+
+##Scenario Design
+###Identifying the Target Users
+
+The target users at Target are new and returning customers. Returning customers can sign in.  Target online sells clothes, baby items, electronics, food, housewares, furniture, Christmas items, toys, beauty products and accessories.  Target also has registries for people getting married, having a baby, having a housewarming and going to college.  Target is trying to sell to men and women and to and for people of all ages.
+
+###Identifying the Key Goals
+Target's key goals online are to help shoppers find items that they want to buy through a convenient search tool and through suggestions of products to purchase.  The website has featured categories and shows pictures of the items it sells to entice customers.  
+
+###Accomplishing the Key Goals
+To accomplish these goals, Target utilizes a number of techniques to connect to the customer and offer suggestions for products to buy.
+
+-Target's website is user friendly, with written categories to choose from, pictorial categories to choose from, suggestions about new products, and a search function.
+
+-Target uses the customer's zip code to recommend items that are popular at the location nearest the customer. One of the recommendation options when clicking on an item is: Trending Items Near Me
+
+-After conducting a search, Target asks if the customer has found what the customer was looking for.  If not, it provides a drop down menu with the following options: I didn't see enough details, I didn't see the specific item I was looking for, the items weren't relevant, the pages loaded too slowly, the item I wanted was out of stock or unavailable, and something else.  This enables Target to refine its search function.
+
+-When a customer clicks on an item, Target recommends other items based on what other customers who clicked on that item also viewed, what other customers ultimately bought of the same type of item, and related items that customers bought.  
+
+-Target considers the style of clothing you click on and then suggests other items that match that style.  For example, when I click on a shirt, it suggests a watch and shoes that they think I would like.
+
+-Target recommends other items made by the same company that the customer is looking at.
+
+-If the customer is logged into his or her account, the customer can click a heart next to an item to identify it as an item that the customer likes. Target will then make recommendations based on that like.
+
+-If the customer is logged into his or her account, Target will recommend products based on previous purchases.
+
+An impressive aspect of Target's recommender system is that the type of recommendation varies based on the item clicked on. Target offers different types of recommendations at different times.  
+
+##Recommendations
+When I clicked on an item that was trending near me, it was not available at the store near me. I would recommend that only items that are available at my local store be suggested.  Other than that, Target's recommendation systems are helpful and making the shopping experience easier.  
