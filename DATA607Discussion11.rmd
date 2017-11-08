@@ -34,6 +34,8 @@ To accomplish these goals, Target utilizes a number of techniques to connect to 
 
 -If the customer is logged into his or her account, the customer can click a heart next to an item to identify it as an item that the customer likes. Target will then make recommendations based on that like.
 
+-Target now offers what it calls an augmented reality feature called See It In Your Space on its website available on mobile phones.  Target lets the customer take a photograph of their room and then choose a piece of Target's furniture to see how it will fit in the space and if it will match the customer's room.  Though this isn't a recommendation for a product to buy, Target is successfully interfacing with customers to encourage purchases.
+
 -If the customer is logged into his or her account, Target will recommend products based on previous purchases.
 
 An impressive aspect of Target's recommender system is that the type of recommendation varies based on the item clicked on. Target offers different types of recommendations at different times.  
