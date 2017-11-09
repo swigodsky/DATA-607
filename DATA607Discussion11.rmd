@@ -12,15 +12,18 @@ output:
 ##Scenario Design
 ###Identifying the Target Users
 
-The target users at Target are new and returning customers. Returning customers can sign in.  Target online sells clothes, baby items, electronics, food, housewares, furniture, Christmas items, toys, beauty products and accessories.  Target also has registries for people getting married, having a baby, having a housewarming and going to college.  Target is trying to sell to men and women and to and for people of all ages.
+The target users at Target are new and returning customers. Returning customers can sign in.  Target online sells clothes, baby items, pet supplies, electronics, food, housewares, furniture, Christmas items, toys, beauty products and accessories.  Target also has registries for people getting married, having a baby, having a housewarming and going to college.  Target is trying to sell to men and women and to and for people of all ages.
 
 ###Identifying the Key Goals
-Target's key goals online are to help shoppers find items that they want to buy through a convenient search tool and through suggestions of products to purchase.  The website has featured categories and shows pictures of the items it sells to entice customers.  
+Target wants every family member growing up with Target products. It wishes to lock in its customers' loyalty. Target's key goals online are to help shoppers find items that they want to buy through a convenient search tool and through suggestions of products to purchase.  Target aims to deliver its advertisement to its customers in a timely fashion to boost its sales. Target wishes to speed up the time of processing a sale. Target designs its plan to reduce returned items and narrow the time items are in storage. 
 
 ###Accomplishing the Key Goals
 To accomplish these goals, Target utilizes a number of techniques to connect to the customer and offer suggestions for products to buy.
 
 -Target's website is user friendly, with written categories to choose from, pictorial categories to choose from, suggestions about new products, and a search function.
+
+####Recommendation engine: Improve sales not only one on a single product but also to suggest related goods!
+Once a customer logs in to the Target website and starts to search items, the recommendation engine records the searching items and recommends similar high rating items to the customer by classifying the client types through his or her clicked items. It also generates a list of related items to its clients.
 
 -Target uses the customer's zip code to recommend items that are popular at the location nearest the customer. One of the recommendation options when clicking on an item is: Trending Items Near Me
 
@@ -34,11 +37,22 @@ To accomplish these goals, Target utilizes a number of techniques to connect to 
 
 -If the customer is logged into his or her account, the customer can click a heart next to an item to identify it as an item that the customer likes. Target will then make recommendations based on that like.
 
--Target now offers what it calls an augmented reality feature called See It In Your Space on its website available on mobile phones.  Target lets the customer take a photograph of their room and then choose a piece of Target's furniture to see how it will fit in the space and if it will match the customer's room.  Though this isn't a recommendation for a product to buy, Target is successfully interfacing with customers to encourage purchases.
-
 -If the customer is logged into his or her account, Target will recommend products based on previous purchases.
 
 An impressive aspect of Target's recommender system is that the type of recommendation varies based on the item clicked on. Target offers different types of recommendations at different times.  
 
+
+###Marketing strategy: phone app digital marketing 
+Target offers a 5% discount for its members.  Target utilizes online marketing to maximize sales. Target is spending more money on their web design and security. It also cooperates with Google Express tool, which can speed up the time in Googling its items and locations. Now its app is available on the Apple phone and Google phone. Target puts out a weekly advertisement to reach customers.
+
+###Technology supports: 
+Target now offers what it calls an augmented reality feature called See It In Your Space on its website available on mobile phones. Target lets customers take a photograph of their room and then choose a piece of Target's furniture to see how it will fit in the space and if it will match the customer's room. It provides a simulation function to simulate a customer’s home space through the phone camera by machine learning technology in 3D.  In the 3D lifestyle simulation, customers can find professional guidance for home decoration.  The use of this app reduces the number of pieces of furniture that are returned.
+
+GPS and barcode scanner: To help customers find goods and narrow their time in the store, Target includes a GPS function in its app. What’s more, the barcode scanner helps customers find updated prices easier. In doing so, Target improves customer satisfaction and reduces the need for employees to price check.
+
+
 ##Recommendations
-When I clicked on an item that was trending near me, it was not available at the store near me. I would recommend that only items that are available at my local store be suggested.  Other than that, Target's recommendation systems are helpful and making the shopping experience easier.  
+Target's recommendation systems are sophisiticated and helpful. Its recommender systems make the shopping experience easier. However, when clicking on an item that was trending near me, it was not available at the store near me. It would be helpful to have a recommender system that would give suggestions for related items that could be picked up in the store nearest the customer.  
+
+Here is the website about Target tech-digital news:
+https://corporate.target.com/article/tag/4645/Tech-Digital
