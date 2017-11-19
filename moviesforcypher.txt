@@ -1,0 +1,25 @@
+LOAD CSV WITH HEADERS FROM
+'https://raw.githubusercontent.com/swigodsky/movies/master/movie.csv' AS line FIELDTERMINATOR ','
+CREATE (:Movies { MovieId: line.movie_id, Title: line.Title})
+
+MATCH (n:Movies) RETURN n
+
+LOAD CSV WITH HEADERS FROM
+'https://raw.githubusercontent.com/swigodsky/movies/master/reviewer.csv' AS line FIELDTERMINATOR ','
+CREATE (:Review { ReviewerId: line.reviewer_id, Name: line.reviewer})
+
+MATCH (a:Review) RETURN a
+
+LOAD CSV WITH HEADERS FROM
+'https://raw.githubusercontent.com/swigodsky/movies/master/moviereviewer.csv' AS line FIELDTERMINATOR ','
+CREATE (:Rating { MVId: line.moviereviewer_id, MovieId: line.movie_id, ReviewerId: line.reviewer_id, Rating: toInteger(line.rating)})
+
+CREATE INDEX ON :Movie(MovieId)
+
+CREATE INDEX ON :Review(ReviewerId)
+
+CREATE INDEX ON :Rating(MVId)
+
+MATCH (a:Review), (n:Movies) RETURN a,n
+
+MATCH (aa:Review), (na:Movies), (rma:Rating) WHERE aa.ReviewerId=rma.ReviewerId AND na.MovieId=rma.MovieId CREATE (aa) - [ra:Rated{value: rma.Rating}] -> (na) RETURN aa,na,ra
