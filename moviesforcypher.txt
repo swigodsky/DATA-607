@@ -1,25 +1,30 @@
+//Load CSV file from movie table
 LOAD CSV WITH HEADERS FROM
 'https://raw.githubusercontent.com/swigodsky/movies/master/movie.csv' AS line FIELDTERMINATOR ','
 CREATE (:Movies { MovieId: line.movie_id, Title: line.Title})
 
+//visualize movie nodes
 MATCH (n:Movies) RETURN n
 
+//load csv files from reviewer table
 LOAD CSV WITH HEADERS FROM
 'https://raw.githubusercontent.com/swigodsky/movies/master/reviewer.csv' AS line FIELDTERMINATOR ','
 CREATE (:Review { ReviewerId: line.reviewer_id, Name: line.reviewer})
 
+//visualize reviewer nodes
 MATCH (a:Review) RETURN a
 
+//load CSV file from ratings table that links movie table to reviewer table
 LOAD CSV WITH HEADERS FROM
 'https://raw.githubusercontent.com/swigodsky/movies/master/moviereviewer.csv' AS line FIELDTERMINATOR ','
 CREATE (:Rating { MVId: line.moviereviewer_id, MovieId: line.movie_id, ReviewerId: line.reviewer_id, Rating: toInteger(line.rating)})
 
+//create indeces
 CREATE INDEX ON :Movie(MovieId)
 
 CREATE INDEX ON :Review(ReviewerId)
 
 CREATE INDEX ON :Rating(MVId)
 
-MATCH (a:Review), (n:Movies) RETURN a,n
-
+//make graph that links reviewers to movies and shares rating value
 MATCH (aa:Review), (na:Movies), (rma:Rating) WHERE aa.ReviewerId=rma.ReviewerId AND na.MovieId=rma.MovieId CREATE (aa) - [ra:Rated{value: rma.Rating}] -> (na) RETURN aa,na,ra
